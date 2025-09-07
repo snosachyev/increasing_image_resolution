@@ -49,11 +49,12 @@ class datasetGenerator(keras.utils.Sequence):
                 transformed = transform(image=img)  # применяем функцию аугментации в изображению и маске
                 img = transformed["image"]
 
+            # Уменьшаем изображения для понижения качества, что бы подать как входное изображение
             low_res_train = tf.image.resize(img, self.reduce_img_size).numpy()
 
             # Восстанавливаем до исходного размера для подачи в сеть
             low_res_train = tf.image.resize(low_res_train, self.img_size).numpy()
 
             x[_] = low_res_train / 255  # нормализуем изображение
-            y[_] = img / 266  # нормализуем изображение
+            y[_] = img / 255  # нормализуем изображение
         return x, y
