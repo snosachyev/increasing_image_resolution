@@ -1,20 +1,20 @@
 import albumentations as A
 import numpy as np
-import tensorflow as tf
 import keras
 
 from keras import utils
+
+from utils import noise_image
 
 
 # Генератор для перебора данных (в виде массивов Numpy)
 class datasetGenerator(keras.utils.Sequence):
 
-    def __init__(self, batch_size, input_img_path, img_size=(32, 32), reduce_img_size=(16, 16), validation=False):
+    def __init__(self, batch_size, input_img_path, img_size=(32, 32), validation=False):
         self.batch_size = batch_size
         self.img_size = img_size
         self.input_img_path = input_img_path
         self.validation = validation
-        self.reduce_img_size = reduce_img_size
 
     def __len__(self):
         """Возвращает число мини-батчей обучающей выборки"""
@@ -49,12 +49,11 @@ class datasetGenerator(keras.utils.Sequence):
                 transformed = transform(image=img)  # применяем функцию аугментации в изображению и маске
                 img = transformed["image"]
 
-            # Уменьшаем изображения для понижения качества, что бы подать как входное изображение
-            low_res_train = tf.image.resize(img, self.reduce_img_size).numpy()
+            img_norm = img / 255.0
 
-            # Восстанавливаем до исходного размера для подачи в сеть
-            low_res_train = tf.image.resize(low_res_train, self.img_size).numpy()
+            y[_] = img_norm  # нормализуем изображение
 
-            x[_] = low_res_train / 255  # нормализуем изображение
-            y[_] = img / 255  # нормализуем изображение
+            x[_] = noise_image(img_norm)
+            y[_] = img_norm
+
         return x, y
