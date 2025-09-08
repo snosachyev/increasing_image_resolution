@@ -4,6 +4,8 @@ import numpy as np
 # Загрузка необходимых библиотек
 import matplotlib.pyplot as plt
 
+import tensorflow as tf
+
 from keras import utils as keras_utils
 
 
@@ -65,3 +67,13 @@ def load_data(images_path, target_size=(32, 32)):
         img_array = keras_utils.img_to_array(img)
         dataset.append(img_array)
     return np.asarray(dataset, dtype=np.float32)
+
+
+def noise_image(img, sigma=0.1):
+    # :param sigma: уровень шума, подбирай экспериментально
+    noise = tf.random.normal(shape=tf.shape(img), mean=0.0, stddev=sigma, dtype=tf.float32)
+
+    noisy_img = img + noise
+    noisy_img = tf.clip_by_value(noisy_img, 0.0, 1.0)
+
+    return noisy_img.numpy()
