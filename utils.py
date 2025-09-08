@@ -23,10 +23,10 @@ def update_history(history, file_name):
     return cnn_history
 
 
-def show_loss(history):
+def show_loss(history, title):
     plt.figure(figsize=(10, 6))  # Optional: Adjust figure size
     plt.plot(history['loss'])
-    plt.title('CNN autoencoder Training Loss')
+    plt.title(title)
     plt.xlabel('Epochs (or Iterations)')
     plt.ylabel('Loss')
     plt.grid(True)
@@ -77,3 +77,11 @@ def noise_image(img, sigma=0.1):
     noisy_img = tf.clip_by_value(noisy_img, 0.0, 1.0)
 
     return noisy_img.numpy()
+
+
+def noise_batch(images, sigma=0.1):
+    # images: numpy.ndarray, shape (batch_size, H, W, C), dtype float32, значения в [0,1]
+    noise = tf.random.normal(shape=tf.shape(images), mean=0.0, stddev=sigma, dtype=tf.float32)
+    noisy_images = images + noise
+    noisy_images = tf.clip_by_value(noisy_images, 0.0, 1.0)
+    return noisy_images.numpy()
