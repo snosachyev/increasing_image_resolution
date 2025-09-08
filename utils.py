@@ -11,16 +11,24 @@ from keras import utils as keras_utils
 
 def update_history(history, file_name):
     try:
-        cnn_history = np.load(f'{file_name}.npy', allow_pickle='TRUE').item()
+        saved_history = np.load(f'{file_name}.npy', allow_pickle='TRUE').item()
     except FileNotFoundError:
-        cnn_history = history
+        saved_history = history
     else:
-        cnn_history['loss'].extend(history['loss'])
-        cnn_history['val_loss'].extend(history['val_loss'])
-        cnn_history['learning_rate'].extend(history['learning_rate'])
-    np.save(f'{file_name}.npy', cnn_history)
+        saved_history['loss'].extend(history['loss'])
+        saved_history['val_loss'].extend(history['val_loss'])
+        saved_history['learning_rate'].extend(history['learning_rate'])
+    np.save(f'{file_name}.npy', saved_history)
 
-    return cnn_history
+    return saved_history
+
+
+def load_history(file_name):
+    try:
+        history = np.load(f'{file_name}.npy', allow_pickle='TRUE').item()
+    except FileNotFoundError:
+        history = {}
+    return history
 
 
 def show_loss(history, title):
